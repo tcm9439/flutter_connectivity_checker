@@ -5,7 +5,7 @@ import 'package:flutter_connectivity_checker/connectivity_status.dart';
 class ConnectivityConfig {
   final Duration connectivityCheckInterval;
   final PingLevelConfig pingLevelConfig;
-  final DisplayConfig displayConfig;
+  late DisplayConfig displayConfig;
   late Future<dynamic> Function() pingRequest;
 
   static Future<void> pingUrl(Uri url) async {
@@ -16,12 +16,15 @@ class ConnectivityConfig {
   ConnectivityConfig({
     this.connectivityCheckInterval = const Duration(seconds: 30),
     this.pingLevelConfig = const PingLevelConfig.defaultConfig(),
-    this.displayConfig = const DisplayConfig(),
-    String pingUrl = 'http://google.com',
-    Future<dynamic> Function()? customPingRequest,
+    DisplayConfig? displayConfig,
+    String pingUrl =
+        'https://google.com', // ping this url if no pingRequest is provided
+    Future<dynamic> Function()? pingRequest,
   }) {
-    pingRequest = customPingRequest ??
-        (() => ConnectivityConfig.pingUrl(Uri.parse(pingUrl)));
+    this.pingRequest =
+        pingRequest ?? (() => ConnectivityConfig.pingUrl(Uri.parse(pingUrl)));
+
+    this.displayConfig = displayConfig ?? DisplayConfig();
   }
 }
 
@@ -44,30 +47,19 @@ class DisplayConfig {
   final Map<ConnectivityStatusType, DisplayConfigForStatusType> _displayConfig;
   final Color loadingIndicatorColor;
 
-  const DisplayConfig({
+  DisplayConfig({
     this.loadingIndicatorColor = Colors.white,
-  }) : _displayConfig = const {
-          ConnectivityStatusType.offline: DisplayConfigForStatusType(
-            message: 'No Network',
-            icon: Icon(Icons.signal_cellular_off),
-          ),
+  }) : _displayConfig = {
+          ConnectivityStatusType.offline:
+              const DisplayConfigForStatusType.offline(),
           ConnectivityStatusType.hasNetworkButNoConnection:
-              DisplayConfigForStatusType(
-            message: 'Server Unreachable',
-            icon: Icon(Icons.signal_cellular_connected_no_internet_4_bar),
-          ),
-          ConnectivityStatusType.poorConnection: DisplayConfigForStatusType(
-            message: 'High Ping',
-            icon: Icon(Icons.signal_cellular_alt_1_bar),
-          ),
-          ConnectivityStatusType.okConnection: DisplayConfigForStatusType(
-            message: 'Medium Ping',
-            icon: Icon(Icons.signal_cellular_alt_2_bar),
-          ),
-          ConnectivityStatusType.goodConnection: DisplayConfigForStatusType(
-            message: 'Low Ping',
-            icon: Icon(Icons.signal_cellular_alt),
-          ),
+              const DisplayConfigForStatusType.hasNetworkButNoConnection(),
+          ConnectivityStatusType.poorConnection:
+              const DisplayConfigForStatusType.poorConnection(),
+          ConnectivityStatusType.okConnection:
+              const DisplayConfigForStatusType.okConnection(),
+          ConnectivityStatusType.goodConnection:
+              const DisplayConfigForStatusType.goodConnection(),
         };
 
   set(ConnectivityStatusType statusType, DisplayConfigForStatusType config) {
@@ -92,5 +84,45 @@ class DisplayConfigForStatusType {
     this.iconColor = Colors.white,
     required this.message,
     required this.icon,
+  });
+
+  const DisplayConfigForStatusType.offline({
+    this.display = true,
+    this.showPingValue = false,
+    this.iconColor = Colors.white,
+    this.message = 'No Network',
+    this.icon = const Icon(Icons.signal_cellular_off),
+  });
+
+  const DisplayConfigForStatusType.hasNetworkButNoConnection({
+    this.display = true,
+    this.showPingValue = false,
+    this.iconColor = Colors.white,
+    this.message = 'Server Unreachable',
+    this.icon = const Icon(Icons.signal_cellular_connected_no_internet_4_bar),
+  });
+
+  const DisplayConfigForStatusType.poorConnection({
+    this.display = true,
+    this.showPingValue = false,
+    this.iconColor = Colors.white,
+    this.message = 'High Ping',
+    this.icon = const Icon(Icons.signal_cellular_alt_1_bar),
+  });
+
+  const DisplayConfigForStatusType.okConnection({
+    this.display = true,
+    this.showPingValue = false,
+    this.iconColor = Colors.white,
+    this.message = 'Medium Ping',
+    this.icon = const Icon(Icons.signal_cellular_alt_2_bar),
+  });
+
+  const DisplayConfigForStatusType.goodConnection({
+    this.display = true,
+    this.showPingValue = false,
+    this.iconColor = Colors.white,
+    this.message = 'Low Ping',
+    this.icon = const Icon(Icons.signal_cellular_alt),
   });
 }
