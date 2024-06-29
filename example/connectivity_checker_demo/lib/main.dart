@@ -13,6 +13,7 @@ class MainApp extends StatelessWidget {
   _requestWithDelay(int milliseconds) {
     return () async {
       await Future.delayed(Duration(milliseconds: milliseconds));
+      throw Exception('Request timeout');
     };
   }
 
@@ -39,29 +40,40 @@ class MainApp extends StatelessWidget {
           const DisplayConfigForStatusType.offline(iconColor: Colors.grey));
 
     var connectivityConfig1 = ConnectivityConfig(
-      pingRequest: _requestWithDelay(10),
-      // pingUrl: 'https://google.com', // may blocked by CORS
+      pingRequest: _requestWithDelay(500),
+      // pingUrl: 'https://google.com', // may blocked by CORS in browser
       // pingUrl: 'http://localhost:59104/',
       displayConfig: displayConfig,
     );
 
     return MaterialApp(
       home: Scaffold(
-        body: Column(
-          children: [
-            ConnectivityDisplay(connectivityConfig1),
-            ConnectivityIcon(
-                connectivityConfig1,
-                ConnectivityStatus.fromPing(
-                    connectivityConfig1, const Duration(milliseconds: 301))),
-            ConnectivityIcon(
-                connectivityConfig1,
-                ConnectivityStatus.fromPing(
-                    connectivityConfig1, const Duration(milliseconds: 901))),
-            ConnectivityIcon(connectivityConfig1,
-                ConnectivityStatus.hasWifiButNoConnection()),
-            ConnectivityIcon(connectivityConfig1, ConnectivityStatus.offline()),
-          ],
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('ConnectivityDisplay'),
+              ConnectivityDisplay(connectivityConfig1),
+              const Text('ConnectivityIcon'),
+              ConnectivityIcon(
+                  connectivityConfig1,
+                  ConnectivityStatus.fromPing(
+                      connectivityConfig1, const Duration(milliseconds: 301))),
+              ConnectivityIcon(
+                  connectivityConfig1,
+                  ConnectivityStatus.fromPing(
+                      connectivityConfig1, const Duration(milliseconds: 901))),
+              ConnectivityIcon(connectivityConfig1,
+                  ConnectivityStatus.hasNetworkButNoConnection()),
+              ConnectivityIcon(
+                  connectivityConfig1, ConnectivityStatus.offline()),
+              const Text('ConnectivityIcon with error'),
+              ConnectivityIcon(
+                  connectivityConfig1,
+                  ConnectivityStatus.hasNetworkButNoConnection(
+                      errorMsg: "Request timeout")),
+            ],
+          ),
         ),
       ),
     );

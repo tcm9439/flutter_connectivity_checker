@@ -43,8 +43,8 @@ void main() {
       expect(result.ping, null);
     });
 
-    test('hasWifiButNoConnection', () {
-      var result = ConnectivityStatus.hasWifiButNoConnection();
+    test('hasNetworkButNoConnection', () {
+      var result = ConnectivityStatus.hasNetworkButNoConnection();
       expect(result.type, ConnectivityStatusType.hasNetworkButNoConnection);
       expect(result.ping, null);
     });

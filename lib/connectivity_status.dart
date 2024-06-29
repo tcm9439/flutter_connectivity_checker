@@ -22,12 +22,13 @@ enum ConnectivityStatusType {
 class ConnectivityStatus {
   ConnectivityStatusType type;
   Duration? ping;
+  String? errorMsg;
 
-  ConnectivityStatus.offline()
+  ConnectivityStatus.offline({this.errorMsg})
       : type = ConnectivityStatusType.offline,
         ping = null;
 
-  ConnectivityStatus.hasWifiButNoConnection()
+  ConnectivityStatus.hasNetworkButNoConnection({this.errorMsg})
       : type = ConnectivityStatusType.hasNetworkButNoConnection,
         ping = null;
 

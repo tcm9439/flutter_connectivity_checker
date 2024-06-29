@@ -77,10 +77,13 @@ class DisplayConfigForStatusType {
   final Color iconColor;
   final String message;
   final Icon icon;
+  final bool
+      showErrorMessage; // whether to show the error message (if any) in a SnackBar
 
   const DisplayConfigForStatusType({
     this.display = true,
     this.showPingValue = false,
+    this.showErrorMessage = false,
     this.iconColor = Colors.white,
     required this.message,
     required this.icon,
@@ -89,6 +92,7 @@ class DisplayConfigForStatusType {
   const DisplayConfigForStatusType.offline({
     this.display = true,
     this.showPingValue = false,
+    this.showErrorMessage = false,
     this.iconColor = Colors.white,
     this.message = 'No Network',
     this.icon = const Icon(Icons.signal_cellular_off),
@@ -97,6 +101,7 @@ class DisplayConfigForStatusType {
   const DisplayConfigForStatusType.hasNetworkButNoConnection({
     this.display = true,
     this.showPingValue = false,
+    this.showErrorMessage = true,
     this.iconColor = Colors.white,
     this.message = 'Server Unreachable',
     this.icon = const Icon(Icons.signal_cellular_connected_no_internet_4_bar),
@@ -105,6 +110,7 @@ class DisplayConfigForStatusType {
   const DisplayConfigForStatusType.poorConnection({
     this.display = true,
     this.showPingValue = false,
+    this.showErrorMessage = false,
     this.iconColor = Colors.white,
     this.message = 'High Ping',
     this.icon = const Icon(Icons.signal_cellular_alt_1_bar),
@@ -113,6 +119,7 @@ class DisplayConfigForStatusType {
   const DisplayConfigForStatusType.okConnection({
     this.display = true,
     this.showPingValue = false,
+    this.showErrorMessage = false,
     this.iconColor = Colors.white,
     this.message = 'Medium Ping',
     this.icon = const Icon(Icons.signal_cellular_alt_2_bar),
@@ -121,6 +128,7 @@ class DisplayConfigForStatusType {
   const DisplayConfigForStatusType.goodConnection({
     this.display = true,
     this.showPingValue = false,
+    this.showErrorMessage = false,
     this.iconColor = Colors.white,
     this.message = 'Low Ping',
     this.icon = const Icon(Icons.signal_cellular_alt),

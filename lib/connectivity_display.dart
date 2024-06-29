@@ -18,7 +18,11 @@ class ConnectivityIcon extends StatelessWidget {
       return Container();
     }
 
-    // show Icon
+    // prepare icon
+    Widget icon = Icon(
+      displayConfig.icon.icon,
+      color: displayConfig.iconColor,
+    );
 
     // prepare message
     var message = displayConfig.message;
@@ -26,15 +30,29 @@ class ConnectivityIcon extends StatelessWidget {
       message += ' (${status.ping!.inMilliseconds}ms)';
     }
 
+    // check to show error or not
+    if (status.errorMsg != null && displayConfig.showErrorMessage) {
+      // create a SnackBar
+      message += ': ${status.errorMsg!}';
+      SnackBar snackBar = SnackBar(
+        content: Text(message),
+      );
+
+      // return a icon that will show the SnackBar when clicked
+      return IconButton(
+          icon: icon,
+          onPressed: () {
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          });
+    }
+
+    // return a icon with a "tooltip" message
     return InfoPopupWidget(
         contentTitle: message,
         arrowTheme: InfoPopupArrowTheme(
           color: displayConfig.iconColor,
         ),
-        child: Icon(
-          displayConfig.icon.icon,
-          color: displayConfig.iconColor,
-        ));
+        child: icon);
   }
 }
 
@@ -47,11 +65,10 @@ class ConnectivityDisplay extends StatelessWidget {
     return StreamBuilder(
         stream: ConnectivityChecker.stream(config),
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
+          if (!snapshot.hasError && snapshot.hasData) {
             ConnectivityStatus status = snapshot.data!;
             return ConnectivityIcon(config, status);
           } else {
-            // still loading
             return CircularProgressIndicator(
               color: config.displayConfig.loadingIndicatorColor,
             );
