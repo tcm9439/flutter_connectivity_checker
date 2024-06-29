@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_connectivity_checker/connectivity_config.dart';
 import 'package:flutter_connectivity_checker/connectivity_display.dart';
 import 'package:flutter_connectivity_checker/connectivity_status.dart';
+import 'package:flutter_connectivity_checker/connectivity_request.dart';
 
 void main() {
   runApp(const MainApp());
@@ -18,6 +19,13 @@ class MainApp extends StatelessWidget {
       if (!success) {
         throw Exception('Request timeout');
       }
+    };
+  }
+
+  _requestWithResponse() {
+    return () async {
+      await Future.delayed(const Duration(milliseconds: 10));
+      return ApiResponse(200, 'data');
     };
   }
 
@@ -56,12 +64,16 @@ class MainApp extends StatelessWidget {
       pingRequest: _requestWithDelay(300, success: false),
       // pingUrl: 'https://google.com', // may blocked by CORS in browser
       // pingUrl: 'http://localhost:59104/',
-      displayConfig: displayConfig,
     );
+
     var connectivityConfig2 = ConnectivityConfig(
       pingRequest: _requestRandom(),
       checkInterval: const Duration(seconds: 3),
-      displayConfig: displayConfig,
+    );
+
+    var connectivityConfig3 = ConnectivityConfig(
+      pingRequest: ConnectivityRequestFactory.requestWithTargetedData(
+          _requestWithResponse(), (data) => data == 'data'),
     );
 
     return MaterialApp(
@@ -71,25 +83,29 @@ class MainApp extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text('ConnectivityDisplay'),
-              ConnectivityDisplay(connectivityConfig1),
+              ConnectivityDisplay(
+                  config: connectivityConfig1, displayConfig: displayConfig),
               const Text('ConnectivityDisplay With Changing Status'),
-              ConnectivityDisplay(connectivityConfig2),
+              ConnectivityDisplay(
+                  config: connectivityConfig2, displayConfig: displayConfig),
+              const Text('ConnectivityDisplay With Targeted Data'),
+              ConnectivityDisplay(
+                  config: connectivityConfig3, displayConfig: displayConfig),
               const Text('ConnectivityIcon According to Display Config'),
               ConnectivityIcon(
-                  connectivityConfig1,
+                  displayConfig,
                   ConnectivityStatus.fromPing(
                       connectivityConfig1, const Duration(milliseconds: 301))),
               ConnectivityIcon(
-                  connectivityConfig1,
+                  displayConfig,
                   ConnectivityStatus.fromPing(
                       connectivityConfig1, const Duration(milliseconds: 901))),
-              ConnectivityIcon(connectivityConfig1,
+              ConnectivityIcon(displayConfig,
                   ConnectivityStatus.hasNetworkButNoConnection()),
-              ConnectivityIcon(
-                  connectivityConfig1, ConnectivityStatus.offline()),
+              ConnectivityIcon(displayConfig, ConnectivityStatus.offline()),
               const Text('ConnectivityIcon with error'),
               ConnectivityIcon(
-                  connectivityConfig1,
+                  displayConfig,
                   ConnectivityStatus.hasNetworkButNoConnection(
                       errorMsg: "Request timeout")),
             ],

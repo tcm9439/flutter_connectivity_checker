@@ -5,13 +5,13 @@ import 'package:flutter_connectivity_checker/connectivity_status.dart';
 import 'package:info_popup/info_popup.dart';
 
 class ConnectivityIcon extends StatelessWidget {
-  final ConnectivityConfig config;
+  final DisplayConfig displayConfig;
   final ConnectivityStatus status;
-  const ConnectivityIcon(this.config, this.status, {super.key});
+  const ConnectivityIcon(this.displayConfig, this.status, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    var displayConfig = config.displayConfig.get(status.type);
+    var displayConfig = this.displayConfig.get(status.type);
 
     // don't show anything
     if (!displayConfig.display) {
@@ -58,7 +58,12 @@ class ConnectivityIcon extends StatelessWidget {
 
 class ConnectivityDisplay extends StatelessWidget {
   final ConnectivityConfig config;
-  const ConnectivityDisplay(this.config, {super.key});
+  final DisplayConfig displayConfig;
+
+  ConnectivityDisplay(
+      {super.key, required this.config, DisplayConfig? displayConfig})
+      : displayConfig =
+            displayConfig ?? DisplayConfig(loadingIndicatorColor: Colors.white);
 
   @override
   Widget build(BuildContext context) {
@@ -67,10 +72,10 @@ class ConnectivityDisplay extends StatelessWidget {
         builder: (context, snapshot) {
           if (!snapshot.hasError && snapshot.hasData) {
             ConnectivityStatus status = snapshot.data!;
-            return ConnectivityIcon(config, status);
+            return ConnectivityIcon(displayConfig, status);
           } else {
             return CircularProgressIndicator(
-              color: config.displayConfig.loadingIndicatorColor,
+              color: displayConfig.loadingIndicatorColor,
             );
           }
         });

@@ -15,7 +15,7 @@ void main() {
         await Future.delayed(const Duration(milliseconds: 100));
       });
       expect(result, isA<Duration>());
-      expect(result.inMilliseconds, greaterThanOrEqualTo(100));
+      expect(result!.inMilliseconds, greaterThanOrEqualTo(100));
     });
   });
 }

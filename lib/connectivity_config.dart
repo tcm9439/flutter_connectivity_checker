@@ -3,9 +3,13 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_connectivity_checker/connectivity_status.dart';
 
 class ConnectivityConfig {
+  /// The interval between each connectivity check
   final Duration checkInterval;
+
+  /// The configuration for the ping levels
   final PingLevelConfig pingLevelConfig;
-  late DisplayConfig displayConfig;
+
+  /// The ping request to be used for checking the connection
   late Future<dynamic> Function() pingRequest;
 
   static Future<void> pingUrl(Uri url) async {
@@ -13,18 +17,19 @@ class ConnectivityConfig {
     return;
   }
 
+  /// Create a new [ConnectivityConfig] with the given parameters
+  /// - [checkInterval] The interval between each connectivity check
+  /// - [pingLevelConfig] The configuration for the ping levels
+  /// - [pingRequest] The ping request to be used for checking the connection
+  /// - [pingUrl] The url to ping if no pingRequest is provided
   ConnectivityConfig({
     this.checkInterval = const Duration(seconds: 30),
     this.pingLevelConfig = const PingLevelConfig.defaultConfig(),
-    DisplayConfig? displayConfig,
-    String pingUrl =
-        'https://google.com', // ping this url if no pingRequest is provided
     Future<dynamic> Function()? pingRequest,
+    String pingUrl = 'https://google.com',
   }) {
     this.pingRequest =
         pingRequest ?? (() => ConnectivityConfig.pingUrl(Uri.parse(pingUrl)));
-
-    this.displayConfig = displayConfig ?? DisplayConfig();
   }
 }
 
@@ -43,6 +48,7 @@ class PingLevelConfig {
         okPingThreshold = const Duration(milliseconds: 800);
 }
 
+/// The configuration for the display if ConnectivityDisplay widget is used
 class DisplayConfig {
   final Map<ConnectivityStatusType, DisplayConfigForStatusType> _displayConfig;
   final Color loadingIndicatorColor;
@@ -71,6 +77,7 @@ class DisplayConfig {
   }
 }
 
+/// The configuration for the display of each status type in ConnectivityDisplay widget is used
 class DisplayConfigForStatusType {
   final bool display;
   final bool showPingValue;
