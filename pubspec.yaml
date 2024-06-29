@@ -1,7 +1,7 @@
 name: flutter_connectivity_checker
-description: "A new Flutter package project."
+description: "A connectivity checker to return a stream of ConnectivityStatus & a widget for displaying the result."
 version: 0.0.1
-homepage:
+homepage: https://github.com/tcm9439/flutter_connectivity_checker
 
 environment:
   sdk: '>=3.2.6 <4.0.0'
