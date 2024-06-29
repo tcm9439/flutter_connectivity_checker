@@ -1,4 +1,4 @@
-name: connectivity_checker_demo
+name: example
 description: "A new Flutter project."
 publish_to: 'none'
 version: 0.1.0
@@ -10,7 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_connectivity_checker: 
-    path: ../../
+    path: ../
 
 dev_dependencies:
   flutter_test:

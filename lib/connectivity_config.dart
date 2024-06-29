@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_connectivity_checker/connectivity_status.dart';
 
 class ConnectivityConfig {
-  final Duration connectivityCheckInterval;
+  final Duration checkInterval;
   final PingLevelConfig pingLevelConfig;
   late DisplayConfig displayConfig;
   late Future<dynamic> Function() pingRequest;
@@ -14,7 +14,7 @@ class ConnectivityConfig {
   }
 
   ConnectivityConfig({
-    this.connectivityCheckInterval = const Duration(seconds: 30),
+    this.checkInterval = const Duration(seconds: 30),
     this.pingLevelConfig = const PingLevelConfig.defaultConfig(),
     DisplayConfig? displayConfig,
     String pingUrl =

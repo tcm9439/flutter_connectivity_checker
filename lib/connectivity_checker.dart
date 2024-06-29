@@ -5,27 +5,30 @@ import 'package:flutter_connectivity_checker/connectivity_config.dart';
 import 'package:flutter_connectivity_checker/connectivity_status.dart';
 
 class ConnectivityChecker {
+  static String? errorMessage;
+
   /// Check if the device has network connection
   static Future<bool> hasNetworkConnection() async {
     final List<ConnectivityResult> connectivityResult =
         await Connectivity().checkConnectivity();
     if (connectivityResult.contains(ConnectivityResult.wifi)) {
-      log('has wifi');
       return true;
     } else if (connectivityResult.contains(ConnectivityResult.mobile)) {
-      log('has mobile');
       return true;
     }
     return false;
   }
 
   /// Ping the request & get the ping duration
-  static Future<Duration> ping(Future<dynamic> Function() request) async {
+  static Future<Duration?> ping(Future<dynamic> Function() request) async {
     final stopwatch = Stopwatch()..start();
-    await request().catchError((error) {
-      log("ping has error");
-      throw error;
-    });
+    try {
+      await request();
+    } catch (e) {
+      errorMessage = "ConnectivityChecker: Error to ping the request.\n$e";
+      log(errorMessage!);
+      return null;
+    }
     stopwatch.stop();
     return stopwatch.elapsed;
   }
@@ -33,30 +36,24 @@ class ConnectivityChecker {
   /// Create a stream of [ConnectivityStatus] based on the [ConnectivityConfig]
   static Stream<ConnectivityStatus> stream(ConnectivityConfig config) async* {
     while (true) {
-      try {
-        Duration ping = await ConnectivityChecker.ping(config.pingRequest);
-        yield ConnectivityStatus.fromPing(config, ping);
-      } catch (e) {
-        String errorMsg = "Error to ping the request: $e";
-        log(errorMsg);
+      Duration? ping = await ConnectivityChecker.ping(config.pingRequest);
+      if (ping == null) {
         // catch exception like TimeoutError
         // check wifi connection
-        log('before hasNetworkConnection');
         var hasConnection = await ConnectivityChecker.hasNetworkConnection();
-        // var hasConnection = true;
-        log('after hasNetworkConnection');
-        log('hasConnection: $hasConnection');
 
         if (hasConnection) {
           yield ConnectivityStatus.hasNetworkButNoConnection(
-              errorMsg: errorMsg);
+              errorMsg: errorMessage);
         } else {
-          yield ConnectivityStatus.offline(errorMsg: errorMsg);
+          yield ConnectivityStatus.offline(errorMsg: errorMessage);
         }
+      } else {
+        yield ConnectivityStatus.fromPing(config, ping);
       }
 
       // sleep for next round
-      await Future.delayed(config.connectivityCheckInterval);
+      await Future.delayed(config.checkInterval);
     }
   }
 }

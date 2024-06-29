@@ -97,7 +97,7 @@ packages:
   flutter_connectivity_checker:
     dependency: "direct main"
     description:
-      path: "../.."
+      path: ".."
       relative: true
     source: path
     version: "0.0.1"

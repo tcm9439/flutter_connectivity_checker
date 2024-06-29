@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_connectivity_checker/connectivity_config.dart';
 import 'package:flutter_connectivity_checker/connectivity_display.dart';
@@ -10,10 +12,21 @@ void main() {
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
-  _requestWithDelay(int milliseconds) {
+  _requestWithDelay(int milliseconds, {bool success = false}) {
     return () async {
       await Future.delayed(Duration(milliseconds: milliseconds));
-      throw Exception('Request timeout');
+      if (!success) {
+        throw Exception('Request timeout');
+      }
+    };
+  }
+
+  _requestRandom() {
+    var random = Random();
+    const possibleValues = [100, 400, 600, 1000];
+    return () async {
+      await Future.delayed(
+          Duration(milliseconds: possibleValues[random.nextInt(4)]));
     };
   }
 
@@ -40,9 +53,14 @@ class MainApp extends StatelessWidget {
           const DisplayConfigForStatusType.offline(iconColor: Colors.grey));
 
     var connectivityConfig1 = ConnectivityConfig(
-      pingRequest: _requestWithDelay(500),
+      pingRequest: _requestWithDelay(300, success: false),
       // pingUrl: 'https://google.com', // may blocked by CORS in browser
       // pingUrl: 'http://localhost:59104/',
+      displayConfig: displayConfig,
+    );
+    var connectivityConfig2 = ConnectivityConfig(
+      pingRequest: _requestRandom(),
+      checkInterval: const Duration(seconds: 3),
       displayConfig: displayConfig,
     );
 
@@ -54,7 +72,9 @@ class MainApp extends StatelessWidget {
             children: [
               const Text('ConnectivityDisplay'),
               ConnectivityDisplay(connectivityConfig1),
-              const Text('ConnectivityIcon'),
+              const Text('ConnectivityDisplay With Changing Status'),
+              ConnectivityDisplay(connectivityConfig2),
+              const Text('ConnectivityIcon According to Display Config'),
               ConnectivityIcon(
                   connectivityConfig1,
                   ConnectivityStatus.fromPing(

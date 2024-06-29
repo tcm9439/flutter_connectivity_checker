@@ -10,7 +10,7 @@ void main() {
 
     test('constructor', () {
       final config = ConnectivityConfig();
-      expect(config.connectivityCheckInterval, const Duration(seconds: 30));
+      expect(config.checkInterval, const Duration(seconds: 30));
       expect(config.pingLevelConfig, const PingLevelConfig.defaultConfig());
       expect(config.displayConfig, isA<DisplayConfig>());
       expect(config.pingRequest, isA<Future<dynamic> Function()>());
